@@ -4,20 +4,29 @@ export function validateDatesParams(req: Request, res: Response, next: NextFunct
   const { days, hours, date } = req.query;
 
   if (!days && !hours) {
-    return next(new Error("Params days or hours are required"));
+    const err = new Error("Params 'days' or 'hours' are required");
+    err.name = "InvalidParameters";
+    return next(err);
   }
 
   if (days && isNaN(Number(days))) {
-    return next(new Error("Param days must be numeric"));
+    const err = new Error("Param 'days' must be numeric");
+    err.name = "InvalidParameters";
+    return next(err);
   }
 
   if (hours && isNaN(Number(hours))) {
-    return next(new Error("Param hours must be numeric"));
+    const err = new Error("Param 'hours' must be numeric");
+    err.name = "InvalidParameters";
+    return next(err);
   }
 
   if (date && isNaN(Date.parse(date as string))) {
-    return next(new Error("Invalid date value provided."));
+    const err = new Error("Invalid date value provided.");
+    err.name = "InvalidParameters";
+    return next(err);
   }
+
 
   next();
 }
