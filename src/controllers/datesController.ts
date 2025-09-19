@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 
 import { getBusinessDateByDays, getBusinessDateByHour } from "../services/datesService";
 
+/**
+ * Controller for business date calculations.
+ * - Calculates business days and hours with given date or now time.
+ * - Responds with the resulting business date as JSON.
+ */
 export const datesController = async (req: Request, res: Response) => {
     const { days, hours, date } = req.query;
 

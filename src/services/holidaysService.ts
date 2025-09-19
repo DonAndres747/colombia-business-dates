@@ -4,6 +4,11 @@ const holidayApi: string = process.env.HOLIDAY_API || '';
 let cachedYear: number | null = null;
 let cachedHolidays: Date[] = [];
 
+/**
+ * Fetches holidays from the configured API.
+ * Uses in-memory cache to avoid repeated requests within the same year.
+ * @returns Array of holiday dates.
+ */
 export const getHolidays = async (): Promise<Date[]> => {
     const currentYear: number = new Date().getFullYear();
 

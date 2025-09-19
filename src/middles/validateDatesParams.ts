@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
+
+/**
+ * Middleware to validate query parameters for business date calculation.
+ * Ensures that `days` or `hours` are provided and numeric, 
+ * and that `date` is a valid date string if present.
+ */
 export function validateDatesParams(req: Request, res: Response, next: NextFunction) {
   const { days, hours, date } = req.query;
 

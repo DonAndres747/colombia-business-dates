@@ -1,4 +1,24 @@
-npm install express typescript ts-node-dev @types/express
-npx tsc --init
-npm install -D @types/node 
-npm install dotenv axios
+# 🇨🇴 Colombia Business Dates
+
+Utilidad escrita en **TypeScript** para calcular fechas hábiles en Colombia, considerando:
+
+- 🗓️ Fines de semana (sábado y domingo).
+- 🎉 Feriados nacionales (cargados desde `holidaysService`).
+- 🕗 Jornadas laborales (08:00 a 17:00 hora Colombia).
+- 🍽️ Pausa de almuerzo (12:00 a 13:00).
+
+---
+
+## 🚀 Funcionalidad
+
+Calcula dias habiles teniendo en cuenta los dias festivos colombianos, 
+fines de semana y horas laborales. 
+
+Ej: 
+Fecha 10 abril 10am , "2025-04-10T15:00:00.000Z", 
+Dias a agregar 5,
+horas a agregar 4,
+dias festivos encontrados (festivos 17/18)
+
+Re:
+Fecha resultante "2025-04-21T20:00:00Z"
