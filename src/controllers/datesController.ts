@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { Request, Response } from "express";
 
 import { getBusinessDateByDays, getBusinessDateByHour } from "../services/datesService";
+import { nowInColombia, fromUTC, toUTC } from "../utils/dateUtils"
 
 /**
  * Controller for business date calculations.
@@ -11,15 +12,9 @@ import { getBusinessDateByDays, getBusinessDateByHour } from "../services/datesS
 export const datesController = async (req: Request, res: Response) => {
     const { days, hours, date } = req.query;
 
-    const CO_TZ = "America/Bogota";
-
     let currentDate: Date = date
-        ? DateTime.fromISO(date as string, { zone: "utc" })
-            .setZone(CO_TZ)
-            .toJSDate()
-        : DateTime.now()
-            .setZone(CO_TZ)
-            .toJSDate();
+        ? fromUTC(date as string)
+        : nowInColombia();
 
     console.log("initialDate");
     console.log(currentDate);
@@ -33,9 +28,8 @@ export const datesController = async (req: Request, res: Response) => {
     }
 
 
-    console.log("send Date");
-    console.log(currentDate.toISOString());
-    console.log(DateTime.fromJSDate(currentDate).setZone("America/Bogota").toISO());
+    const utcDate: Date = toUTC(currentDate);
+    console.log("send Date", utcDate.toISOString());
 
-    res.status(200).json({ date: currentDate.toISOString() });
+    res.status(200).json({ date: utcDate.toISOString() });
 }
