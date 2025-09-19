@@ -1,4 +1,4 @@
 npm install express typescript ts-node-dev @types/express
 npx tsc --init
 npm install -D @types/node 
-npm install dotenv
+npm install dotenv axios

@@ -1,9 +1,6 @@
-import express, { Application } from "express";
-import dotenv from "dotenv"
+import express, { Application } from "express"; 
 
 import datesRoutes from "./routes/datesRoutes";
-
-dotenv.config();
 
 const app: Application = express();
 
