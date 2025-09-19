@@ -1,4 +1,5 @@
 import { getHolidays } from "./holidaysService";
+import { nowInColombia, fromUTC, toUTC } from "../utils/dateUtils"
 
 
 /**
@@ -11,8 +12,8 @@ export async function getBusinessDateByDays(date: Date, days: number): Promise<D
     let newDate: Date = new Date(date);
     const holidays: Date[] = await getHolidays();
 
-    console.log("hora byDays");
-    console.log(newDate);
+    // console.log("hora byDays");
+    // console.log(newDate);
 
 
     //If start date is not business date then, set the start time to be a whole work day
@@ -35,6 +36,9 @@ export async function getBusinessDateByDays(date: Date, days: number): Promise<D
         };
     }
 
+
+    // console.log("date return");
+    // console.log(fromUTC(newDate.toISOString()));
     return newDate;
 }
 
@@ -49,15 +53,24 @@ export async function getBusinessDateByHour(date: Date, hours: number): Promise<
     let currentHour: number = newDate.getHours();
     const maxHour: number = 16;
 
-    console.log("hora byHours");
-    console.log(newDate);
+    console.log("hora byHours (entrada)", {
+        iso: newDate.toISOString(),
+        hours: newDate.getHours(),
+        tzOffset: newDate.getTimezoneOffset(),
+        maxHour,
+        currentHour
+    });
 
     //validates if current hour + hours is business time if not, calculates new hours and continue the process 
     if (currentHour + hours > maxHour || (currentHour + hours == maxHour && newDate.getMinutes() > 0)) {
+        // console.log("entra en not bussines hours");
+
         newDate = await getBusinessDateByDays(newDate, 1);
         newDate.setHours(8, 0, 0, 0);
 
         if (maxHour - currentHour > 0) {
+            // console.log("entra en mayor a 0");
+            
             hours = (hours - (maxHour + 1 - currentHour));
         }
 
@@ -75,6 +88,9 @@ export async function getBusinessDateByHour(date: Date, hours: number): Promise<
             newDate.setHours(newDate.getHours() + 1);
         }
     }
+
+    console.log("date return");
+    console.log(fromUTC(newDate.toISOString()));
 
     return newDate;
 }

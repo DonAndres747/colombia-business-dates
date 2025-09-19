@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import { Request, Response } from "express";
 
 import { getBusinessDateByDays, getBusinessDateByHour } from "../services/datesService";
@@ -28,6 +27,7 @@ export const datesController = async (req: Request, res: Response) => {
     }
 
 
+    // console.log(currentDate);
     const utcDate: Date = toUTC(currentDate);
     console.log("send Date", utcDate.toISOString());
 

@@ -3,28 +3,22 @@ import { DateTime } from "luxon";
 const CO_TZ = "America/Bogota";
 
 /**
- * Get the current date/time in Colombia as a JS Date.
+ * Obtiene la fecha/hora actual en Colombia como Date.
  */
 export function nowInColombia(): Date {
   return DateTime.now().setZone(CO_TZ).toJSDate();
 }
 
 /**
- * Convert from UTC ISO string → Colombian Date.
- * @param isoString UTC datetime string
+ * Convierte una fecha (Date) desde zona Colombia a UTC.
  */
-export function fromUTC(isoString: string): Date {
-  return DateTime.fromISO(isoString, { zone: "utc" })
-    .setZone(CO_TZ)
-    .toJSDate();
+export function toUTC(date: Date): Date {
+  return DateTime.fromJSDate(date, { zone: CO_TZ }).toUTC().toJSDate();
 }
 
 /**
- * Convert Colombian Date → UTC Date.
- * @param date Colombian date
+ * Convierte un string ISO en UTC a Date en zona Colombia.
  */
-export function toUTC(date: Date): Date {
-  return DateTime.fromJSDate(date, { zone: CO_TZ })
-    .toUTC()
-    .toJSDate();
+export function fromUTC(isoString: string): Date {
+  return DateTime.fromISO(isoString, { zone: "utc" }).setZone(CO_TZ).toJSDate();
 }
