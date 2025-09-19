@@ -15,14 +15,14 @@ export function validateDatesParams(req: Request, res: Response, next: NextFunct
     return next(err);
   }
 
-  if (days && isNaN(Number(days))) {
-    const err = new Error("Param 'days' must be numeric");
+  if (days && (isNaN(Number(days)) || Number(days) < 0)) {
+    const err = new Error("Param 'days' must be a positive number");
     err.name = "InvalidParameters";
     return next(err);
   }
 
-  if (hours && isNaN(Number(hours))) {
-    const err = new Error("Param 'hours' must be numeric");
+  if (hours && (isNaN(Number(hours)) || Number(hours) < 0)) {
+    const err = new Error("Param 'hours' must be a positive number");
     err.name = "InvalidParameters";
     return next(err);
   }

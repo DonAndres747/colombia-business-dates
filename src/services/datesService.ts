@@ -11,6 +11,10 @@ export async function getBusinessDateByDays(date: Date, days: number): Promise<D
     let newDate: Date = new Date(date);
     const holidays: Date[] = await getHolidays();
 
+    console.log("hora byDays");
+    console.log(newDate);
+
+
     //If start date is not business date then, set the start time to be a whole work day
     //8 hours
     if (isWeekend(newDate) && newDate.getHours() > 17) {
@@ -44,6 +48,9 @@ export async function getBusinessDateByHour(date: Date, hours: number): Promise<
     let newDate: Date = new Date(date);
     let currentHour: number = newDate.getHours();
     const maxHour: number = 16;
+
+    console.log("hora byHours");
+    console.log(newDate);
 
     //validates if current hour + hours is business time if not, calculates new hours and continue the process 
     if (currentHour + hours > maxHour || (currentHour + hours == maxHour && newDate.getMinutes() > 0)) {
