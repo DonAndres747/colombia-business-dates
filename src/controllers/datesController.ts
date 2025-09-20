@@ -15,8 +15,7 @@ export const datesController = async (req: Request, res: Response) => {
         ? fromUTC(date as string)
         : nowInColombia();
 
-    console.log("initialDate");
-    console.log(currentDate);
+    console.log("initialDate", currentDate);
 
     if (days) {
         currentDate = await getBusinessDateByDays(currentDate, Number(days));
@@ -27,7 +26,6 @@ export const datesController = async (req: Request, res: Response) => {
     }
 
 
-    // console.log(currentDate);
     const utcDate: Date = toUTC(currentDate);
     console.log("send Date", utcDate.toISOString());
 
