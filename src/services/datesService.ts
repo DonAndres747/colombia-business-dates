@@ -1,5 +1,5 @@
 import { getHolidays } from "./holidaysService";
-import { nowInColombia, fromUTC, toUTC } from "../utils/dateUtils"
+import { getColombiaHour, isHoliday, isWeekend, setColombiaTime, } from "../utils/dateUtils"
 
 
 /**
@@ -12,33 +12,53 @@ export async function getBusinessDateByDays(date: Date, days: number): Promise<D
     let newDate: Date = new Date(date);
     const holidays: Date[] = await getHolidays();
 
-    // console.log("hora byDays");
-    // console.log(newDate);
-
-
     //If start date is not business date then, set the start time to be a whole work day
     //8 hours
-    if (isWeekend(newDate) && newDate.getHours() > 17) {
-        newDate.setHours(17, 0, 0, 0);
+    if (isWeekend(newDate) && getColombiaHour(newDate) > 17) {
+        /* console.log("Entro en not business dates");
+        console.log("antes");
+        console.log(newDate); */
+
+        newDate = setColombiaTime(newDate, { hour: 17, minute: 0, second: 0, millisecond: 0 });
+        /* console.log("despues");
+        console.log(newDate);  */
+
     }
 
     //if lunch time then minutes are set to 0 
-    if (newDate.getHours() == 12) {
+    if (getColombiaHour(newDate) == 12) {
+        /*       console.log("Entro en hora almuerzo por dia");
+              console.log("antes");
+              console.log(newDate);
+       */
         newDate.setMinutes(0, 0, 0);
+
+        /*   console.log("despues");
+          console.log(newDate); */
     }
 
     //Adds days to the current date, skipping weekends and holidays
     while (days > 0) {
+        /* console.log("iteracion");
+        console.log("antes");
+        console.log(newDate);
+ */
         newDate.setDate(newDate.getDate() + (newDate.getDay() === 6 ? 2 : 1));
+        /*      console.log("depues");
+             console.log(newDate); */
 
         if (!isWeekend(newDate) && !isHoliday(newDate, holidays)) {
             days -= 1
         };
     }
 
+    /*    console.log("Days return debug", {
+           raw: newDate,
+           iso: newDate.toISOString(),
+           str: newDate.toString(),
+           bogota: newDate.toLocaleString("es-CO", { timeZone: "America/Bogota" }),
+       }); */
 
-    // console.log("date return");
-    // console.log(fromUTC(newDate.toISOString()));
     return newDate;
 }
 
@@ -50,71 +70,69 @@ export async function getBusinessDateByDays(date: Date, days: number): Promise<D
  */
 export async function getBusinessDateByHour(date: Date, hours: number): Promise<Date> {
     let newDate: Date = new Date(date);
-    let currentHour: number = newDate.getHours();
+    let currentHour: number = getColombiaHour(newDate);
     const maxHour: number = 16;
 
     console.log("hora byHours (entrada)", {
         iso: newDate.toISOString(),
-        hours: newDate.getHours(),
+        hours: getColombiaHour(newDate),
         tzOffset: newDate.getTimezoneOffset(),
         maxHour,
         currentHour
     });
 
-    //validates if current hour + hours is business time if not, calculates new hours and continue the process 
+    //validates if current hour + hours is business time if not, calculates new hours and conti nue the process 
     if (currentHour + hours > maxHour || (currentHour + hours == maxHour && newDate.getMinutes() > 0)) {
-        // console.log("entra en not bussines hours");
+        console.log("entra en not bussines hours");
+        console.log("antes de set hour");
+        console.log(newDate);
+
 
         newDate = await getBusinessDateByDays(newDate, 1);
-        newDate.setHours(8, 0, 0, 0);
+        newDate = setColombiaTime(newDate, { hour: 8, minute: 0, second: 0, millisecond: 0 });
+
+        console.log("despues de set hour");
+        console.log(newDate);
 
         if (maxHour - currentHour > 0) {
-            // console.log("entra en mayor a 0");
-            
+            console.log("entra en mayor a 0");
+
             hours = (hours - (maxHour + 1 - currentHour));
         }
 
-        newDate = await getBusinessDateByHour(newDate, hours);
+        newDate = await getBusinessDateByHour(newDate, hours)
+
+        console.log("despues de get business dates by hour");
+        console.log(newDate);
     } else {
         // if yes then adds the time to the current time validating business days and lunch time.
         if (isWeekend(newDate)) {
+            console.log("weekend");
+            console.log("antes");
+            console.log(newDate);
+
+
             newDate = await getBusinessDateByDays(newDate, 1);
-            newDate.setHours(8, 0, 0, 0);
+            console.log("despues");
+            console.log(newDate);
+            newDate = setColombiaTime(newDate, { hour: 8, minute: 0, second: 0, millisecond: 0 });
+            console.log("despues de sethour");
+            console.log(newDate);
         }
 
-        newDate.setHours(newDate.getHours() + hours);
+        newDate = setColombiaTime(newDate, { hour: getColombiaHour(newDate) + hours });
 
-        if (newDate.getHours() >= 12 && date.getHours() < 12) {
-            newDate.setHours(newDate.getHours() + 1);
+        if (getColombiaHour(newDate) >= 12 && getColombiaHour(date) < 12) {
+            newDate = setColombiaTime(newDate, { hour: getColombiaHour(newDate) + 1 });
         }
     }
 
-    console.log("date return");
-    console.log(fromUTC(newDate.toISOString()));
+    console.log("Hours return debug", {
+        raw: newDate,
+        iso: newDate.toISOString(),
+        str: newDate.toString(),
+        bogota: newDate.toLocaleString("es-CO", { timeZone: "America/Bogota" }),
+    });
 
     return newDate;
-}
-
-/**
- * Check if a date falls on a weekend (Saturday or Sunday).
- * @param date - Date to check.
- * @returns true if weekend, false otherwise.
- */
-function isWeekend(date: Date): boolean {
-    return [6, 0].includes(date.getDay());
-}
-
-/**
- * Check if a date is a holiday from the given list.
- * Comparison ignores time-of-day.
- * @param date - Date to check.
- * @param holidays - List of holiday dates.
- * @returns true if holiday, false otherwise.
- */
-function isHoliday(date: Date, holidays: Date[]): boolean {
-    return holidays.some(h =>
-        h.getFullYear() === date.getFullYear() &&
-        h.getMonth() === date.getMonth() &&
-        h.getDate() === date.getDate()
-    );
-}
+} 
